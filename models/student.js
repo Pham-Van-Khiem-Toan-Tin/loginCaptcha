@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Schema.ObjectId;
+
 const studentSchema = new mongoose.Schema({
-    id: {
-        type: ObjectId,
-        ref: "users"
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
     },
     class: {
         type: String,

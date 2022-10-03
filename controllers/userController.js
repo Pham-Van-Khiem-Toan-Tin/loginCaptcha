@@ -1,4 +1,3 @@
-
 const userModel = require("../models/user");
 const crypto = require("crypto");
 const sendToken = require("../utils/jwtToken");
@@ -10,7 +9,7 @@ const studentModel = require("../models/student");
 exports.loginUser = catchAsyncError(async (req, res, next) => {
   const { id, password } = req.body;
   //checking if user have name and password
-  if (!userName || !password) {
+  if (!id || !password) {
     return next(new ErrorHandle("Please Enter Your Email and Password", 400));
   }
   const user = await userModel.findOne({ id: id }).select("+password");
@@ -23,11 +22,22 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
   }
   if (user.role === "student") {
     const student = await studentModel
-      .findOne({ id: user._id })
-      .populate("users", "name email age dateOfBirth");
-    sendToken(student, 200, res);
+      .findOne({ _id: user._id })
+      .populate("_id", "id password");
+    const token = user.getJWTToken();
+
+    const option = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+    res.status(200).cookie("token", token, option).json({
+      success: true,
+      student,
+      token,
+    });
+  } else {
+    sendToken(user, 200, res);
   }
-  sendToken(user, 200, res);
 });
 
 //logout user

@@ -8,6 +8,5 @@ const connect = async () => {
   } catch (error) {
     console.log("Connect database fail \n" + error);
   }
-    
 };
 module.exports = connect;
